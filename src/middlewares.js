@@ -1,13 +1,23 @@
-/** Middleware Express: valida a origem das operações que alteram dados e
- * padroniza as respostas de erros. Complementa CORS e SameSite=Lax.
+/** Valida a origem de requisições que alteram dados (proteção CSRF).
+ * Endereços oficiais são aceitos mesmo sem configurar CORS_ORIGIN no Render.
+ * CORS_ORIGIN pode acrescentar outras origens, separadas por vírgulas.
  */
-export function origemDeEscritaPermitida(req, origens = process.env.CORS_ORIGIN || 'http://localhost:5173') {
+const ORIGENS_OFICIAIS = [
+  'http://localhost:5173',
+  'https://numnum-kappa.vercel.app',
+  'https://nutrinnn.vercel.app',
+]
+
+export function origemDeEscritaPermitida(req, origens = process.env.CORS_ORIGIN || '') {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return true
   const origin = req.headers.origin
   if (!origin) return true // clientes sem navegador (curl, Swagger, testes)
-  const lista = origens.split(',').map(s => s.trim()).filter(Boolean)
-  try { return lista.includes(origin) || new URL(origin).host === req.headers.host }
-  catch { return false }
+  try {
+    const url = new URL(origin)
+    if (url.origin !== origin || !['http:', 'https:'].includes(url.protocol)) return false
+    const extras = origens.split(',').map(s => s.trim()).filter(Boolean)
+    return [...ORIGENS_OFICIAIS, ...extras].includes(origin) || url.host === req.headers.host
+  } catch { return false }
 }
 
 export function verificarOrigem(req, res, next) {
