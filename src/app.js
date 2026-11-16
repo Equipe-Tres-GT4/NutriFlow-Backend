@@ -21,7 +21,7 @@ import { limiteGeral, limiteAutenticacao, ignorarLimiteAutenticacao } from './li
 const app = express()
 app.disable('x-powered-by')
 app.use(helmet({ contentSecurityPolicy: false })) // Swagger UI hospeda seus próprios assets
-app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',').map(x => x.trim()) || ['http://localhost:5173'], credentials: true }))
+app.use(cors())
 app.use(express.json({ limit: '120kb' }))
 app.use(cookieParser())
 app.use('/api', rateLimit({ windowMs: 60_000, limit: limiteGeral(), standardHeaders: 'draft-7', legacyHeaders: false }))
