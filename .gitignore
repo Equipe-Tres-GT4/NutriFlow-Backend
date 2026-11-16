@@ -1,0 +1,26 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.admin-seed.local.json
+data/
+*.sqlite
+*.db
+coverage/
+.DS_Store
+
+# Segredos
+.env
+.env.*
+!.env.example
+.admin-seed.local.json
+*.local.json
+
+# Dependências
+node_modules/
+
+# Arquivos gerados e dados locais
+uploads/
+backups/
+*.log
+coverage/
